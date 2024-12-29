@@ -1,0 +1,31 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    Gedmo\DoctrineExtensions:
+        autowire: true
+        autoconfigure: true
+        public: false
+    Gedmo\SoftDeleteable\SoftDeleteableListener:
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+    App\Application\ArgumentResolver\DTOResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 50 }
+    App\Infrastructure\Service\Cache\RedisService:
+        arguments:
+            $redisUrl: '%env(REDIS_URL)%'
+    SymfonyCasts\Bundle\VerifyEmail\Generator\VerifyEmailTokenGenerator: '@symfonycasts.verify_email.token_generator'
+    Symfony\Component\HttpFoundation\UriSigner:
+        arguments:
+            $secret: '%env(APP_SECRET)%'
+            $parameter: 'signature'
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Application/DependencyInjection/'
+            - '../src/Domain/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Infrastructure/Service/Cache'
