@@ -42,6 +42,8 @@ RUN set -o errexit -o nounset -o pipefail -o xtrace; \
             openldap-dev \
             openssh \
             postgresql-dev \
+            supervisor \
+            php-fpm \
             unzip \
             wget \
             yaml-dev \
@@ -59,6 +61,7 @@ RUN set -o errexit -o nounset -o pipefail -o xtrace; \
     # Install PHP extensions.
     install-php-extensions \
         apcu \
+        amqp \
         bcmath \
         gd \
         igbinary \
@@ -73,12 +76,20 @@ RUN set -o errexit -o nounset -o pipefail -o xtrace; \
         xdebug \
         zip
 
-
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN set -o errexit -o nounset -o pipefail -o xtrace; \
     \
     composer --global config repos.packagist composer 'https://mirrors.tencent.com/composer/'
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+# Create the /var/log/supervisor directory
+RUN mkdir -p /var/log/supervisor && chmod -R 755 /var/log/supervisor
 
-WORKDIR /var/www/html
+COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copy PHP-FPM configuration
+COPY ./php-fpm.conf /etc/php81/php-fpm.conf
+COPY ./www.conf /etc/php81/php-fpm.d/www.conf
+
+# Set the default command to run supervisord
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

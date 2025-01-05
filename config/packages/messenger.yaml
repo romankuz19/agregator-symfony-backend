@@ -1,0 +1,13 @@
+#framework:
+#    messenger:
+#        transports:
+#            async_logs:
+#                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+#                options:
+#                    exchange:
+#                        name: logs
+#                        type: direct
+#                    queues:
+#                        logs_queue: ~
+#        routing:
+#            'App\Infrastructure\Rabbit\LogMessage': async_logs

@@ -19,16 +19,10 @@ class Service
     private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private string $username;
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $title;
 
     #[ORM\Column(type: 'text')]
     private string $text;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $category;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imgUrl = null;
@@ -46,10 +40,14 @@ class Service
     #[ORM\JoinColumn(nullable: false)]
     private User $author;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'service', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'services')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Category $category;
+
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'services', cascade: ['persist', 'remove'])]
     private Collection $comments;
 
-    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'service', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'services', cascade: ['persist', 'remove'])]
     private Collection $reviews;
 
     public function __construct()
@@ -61,18 +59,6 @@ class Service
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
     }
 
     public function getTitle(): string
@@ -99,12 +85,12 @@ class Service
         return $this;
     }
 
-    public function getCategory(): string
+    public function getCategory(): Category
     {
         return $this->category;
     }
 
-    public function setCategory(string $category): self
+    public function setCategory(Category $category): self
     {
         $this->category = $category;
 

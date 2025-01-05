@@ -47,7 +47,7 @@ class RegisterCompleteDTO
     public string $city;
 
     #[Assert\NotBlank(message: 'Phone number is required')]
-    #[Assert\Type(type: 'integer', message: 'Phone number must be an integer')]
+    #[Assert\Type(type: 'string', message: 'Phone number must be a string')]
     #[Assert\Length(exactly: 11)]
-    public int $phoneNumber;
+    public string $phoneNumber;
 }

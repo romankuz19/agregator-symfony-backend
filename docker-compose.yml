@@ -3,12 +3,30 @@ version: '3.8'
 networks:
   skeletonbr:
     driver: bridge
+  elastic:
+    external: true
 
 services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    networks:
+      - skeletonbr
+      - elastic
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
   php:
     container_name: 'php-skeleton'
     networks:
       - skeletonbr
+      - elastic
     build:
       context: ./docker/php
     volumes:
@@ -19,6 +37,8 @@ services:
     working_dir: '/var/www/html'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    ports:
+      - "9000:9000"  # Expose PHP-FPM port
 
   nginx:
     container_name: 'nginx-skeleton'
@@ -61,3 +81,4 @@ services:
 
 volumes:
   postgres_data:
+  rabbitmq_data:

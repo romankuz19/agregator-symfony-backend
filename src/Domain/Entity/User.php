@@ -41,17 +41,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $city = null;
 
-    #[ORM\Column(type: 'bigint', unique: true, nullable: true)]
-    private ?int $phoneNumber = null;
+    #[ORM\Column(type: 'string', length: 20, unique: true, nullable: true)]
+    private ?string $phoneNumber = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $admin = false;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $secretQuestion = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $secretQuestionAnswer = null;
 
     #[ORM\OneToMany(targetEntity: Service::class, mappedBy: 'author', cascade: ['persist', 'remove'])]
     private Collection $services;
@@ -126,12 +120,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
 
-    public function setPhoneNumber(?int $phoneNumber): self
+    public function setPhoneNumber(?string $phoneNumber): self
     {
         $this->phoneNumber = $phoneNumber;
 
@@ -146,30 +140,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAdmin(bool $admin): self
     {
         $this->admin = $admin;
-
-        return $this;
-    }
-
-    public function getSecretQuestion(): ?string
-    {
-        return $this->secretQuestion;
-    }
-
-    public function setSecretQuestion(?string $secretQuestion): self
-    {
-        $this->secretQuestion = $secretQuestion;
-
-        return $this;
-    }
-
-    public function getSecretQuestionAnswer(): ?string
-    {
-        return $this->secretQuestionAnswer;
-    }
-
-    public function setSecretQuestionAnswer(?string $secretQuestionAnswer): self
-    {
-        $this->secretQuestionAnswer = $secretQuestionAnswer;
 
         return $this;
     }

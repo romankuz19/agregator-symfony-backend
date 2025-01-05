@@ -1,27 +1,43 @@
 parameters:
+    logstash_host: '%env(LOGSTASH_HOST)%'
+    logstash_port: '%env(int:LOGSTASH_PORT)%'
 
 services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    monolog.handler.rabbitmq:
+        class: App\Infrastructure\Monolog\RabbitMQHandler
+        arguments:
+            - '@old_sound_rabbit_mq.logs_producer'
+        tags:
+            - { name: monolog.handler, channel: rmq_logs }
+
     Gedmo\DoctrineExtensions:
         autowire: true
         autoconfigure: true
         public: false
+
     Gedmo\SoftDeleteable\SoftDeleteableListener:
         tags:
             - { name: doctrine.event_listener, event: onFlush }
+
     App\Application\ArgumentResolver\DTOResolver:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
+
     App\Infrastructure\Service\Cache\RedisService:
         arguments:
             $redisUrl: '%env(REDIS_URL)%'
+
     SymfonyCasts\Bundle\VerifyEmail\Generator\VerifyEmailTokenGenerator: '@symfonycasts.verify_email.token_generator'
+
     Symfony\Component\HttpFoundation\UriSigner:
         arguments:
             $secret: '%env(APP_SECRET)%'
             $parameter: 'signature'
+
     App\:
         resource: '../src/'
         exclude:

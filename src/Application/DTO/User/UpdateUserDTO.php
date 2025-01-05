@@ -13,7 +13,7 @@ class UpdateUserDTO
         private readonly ?string $firstName,
         private readonly ?string $secondName,
         private readonly ?string $city,
-        private readonly ?int $phoneNumber,
+        private readonly ?string $phoneNumber,
     ) {
     }
 
@@ -47,7 +47,7 @@ class UpdateUserDTO
         return $this->city;
     }
 
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Application\DependencyInjection\Compiler\DoctrineExtensionsPass;
 use App\Application\DependencyInjection\Compiler\DTOResolverPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -19,5 +18,7 @@ class Kernel extends BaseKernel
     {
         $container->addCompilerPass(new DTOResolverPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 10);
         //        $container->addCompilerPass(new DoctrineExtensionsPass());
+        //        $container->registerExtension(new OldSoundRabbitMqExtension());
+        //        $container->addCompilerPass(new RegisterPartsPass());
     }
 }

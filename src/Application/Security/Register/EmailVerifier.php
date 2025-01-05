@@ -6,8 +6,8 @@ namespace App\Application\Security\Register;
 
 use App\Application\DTO\ValidatedDTO\RegisterCompleteDTO;
 use App\Domain\Entity\User;
+use App\Domain\Service\UserService;
 use App\Infrastructure\Service\Cache\RedisService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Mailer\MailerInterface;
@@ -28,10 +28,10 @@ class EmailVerifier
     public function __construct(
         private readonly VerifyEmailHelperInterface $verifyEmailHelper,
         private readonly MailerInterface $mailer,
-        private readonly EntityManagerInterface $entityManager,
         private readonly RedisService $cache,
         private readonly UriSigner $uriSigner,
         private readonly VerifyEmailTokenGenerator $tokenGenerator,
+        private readonly UserService $userService,
     ) {
     }
 
@@ -70,6 +70,7 @@ class EmailVerifier
     public function handleEmailConfirmation(RegisterCompleteDTO $registerCompleteDTO, User $user): void
     {
         $uri = $this->getCachedData($user->getId())['signedUrl'] ?? '';
+
         if (!$this->uriSigner->check($uri)) {
             throw new InvalidSignatureException('Invalid signature');
         }
@@ -80,10 +81,8 @@ class EmailVerifier
             throw new WrongEmailVerifyException('Invalid token');
         }
 
-        $user->setIsVerified(true);
+        $this->userService->verifyUser($user);
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
         $this->cache->delete($this->getCacheKey($user->getId()));
     }
 
